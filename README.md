@@ -174,4 +174,75 @@ end
   end
 ```
 
-24. 
+24. Go to google: https://console.cloud.google.com/getting-started?pli=1
+
+25. Click APIs & Services > Credentials - Click new project, name it
+* Make sure you are on the right project, click + Create Credentials select OAuth client ID, click Configure Consent Screen - choose Internal or External - for this we are choosing External - click create
+* Name the app, add support email,  add email again under Developer contact information - hit save and continue - then hit save and continue again.
+* add test users
+There was something here about authorizing  https://youtu.be/CnZnwV38cjo?t=877
+* you may have to click out and come back in to see what you need here.
+* Authorized redirect URIs needs to be: http://localhost:3000/users/auth/google_oauth2/callback
+* get the client ID and the client secret
+
+
+26. take a look at app/config/initializers/devise.rb - notice the ENV stuff - type this into the console:
+```
+EDITOR="code --wait" bin/rails credentials:edit
+```
+
+27. add the client ID and the secret to that file:
+```
+google_oauth_client_id: xxxxxxxx-xxxxxxxxxxuxxxxxxx.apps.googleusercontent.com
+google_oauth_client_secret: xxxxxxxx-Rxxxxxxxxxxxx1kxxxxxx
+```
+**Hit ctrl-s and then close the file to save**
+
+If it worked correctly you will see:
+```
+File encrypted and saved.
+```
+
+28. Alter the config.omniauth stuff in devise.rb
+```
+config.omniauth :google_oauth2, 
+    Rails.application.credentials.dig(:google_oauth_client_id), 
+    Rails.application.credentials.dig(:google_oauth_client_secret)
+```
+
+29. Add to the home page:
+```
+<% if current_user%>
+    <h2><%= current_user.email %></h2>
+    <%= link_to "Edit Account", edit_user_registration_path %>
+    <%= button_to "Logout", destroy_user_session_path, data: {turbo: "false"}, method: :delete %>
+<% else %>
+    <%= link_to "Login", new_user_session_path %>
+    <%= link_to "Create Account", new_user_registration_path %>
+<% end %>
+```
+
+30. generate the views so we can change some things:
+```
+bin/rails g devise:views
+```
+
+31. go to google and search "google login icon" go to the Branding Guidlines - download files - grab the ones within web>1x and add them to app/assets/images/
+
+32. then go into app > views > Devise > Shared > Links and change the omniauthable one at the bottom:
+```
+<%- if devise_mapping.omniauthable? %>
+  <%- resource_class.omniauth_providers.each do |provider| %>
+    <%= form_for "Login",
+      url: omniauth_authorize_path(resource_name, provider),
+      method: :post,
+      data: {turbo: "false"} do |f| %>
+         <%= f.submit "Login", type: "image", src: url_for("/images/btn_google_signin_light_normal_web.png") %> 
+    <% end %>
+  <% end %>
+<% end %>
+```
+
+Test and see if it is working. It is!!!!
+
+33. 
