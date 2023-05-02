@@ -260,3 +260,5 @@ def update_resource(resource, params)
   ```
 
 34. Everything working on the current build except for User#edit
+
+35. made a couple of adjustments on the login page to only give the login with Google option and commented out the user#edit page because of the error
