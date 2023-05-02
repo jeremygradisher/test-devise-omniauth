@@ -76,3 +76,6 @@ t.string :provider
 
 14. Run ```bin/rails db:migrate```
 
+* this is at 4:34 of 26:39: https://youtu.be/CnZnwV38cjo?t=274
+
+15. 
