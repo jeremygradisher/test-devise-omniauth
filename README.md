@@ -109,4 +109,69 @@ def after_sign_out_path_for(_resource_or_scope)
 ```
 We are here: https://youtu.be/CnZnwV38cjo?t=411
 
-19. 
+19. add to app/users/omniauth_callbacks_controller.rb
+```
+def google_oauth2
+    user = User.from_omniauth(auth)
+end
+```
+
+20. add to User.rb
+```
+def self.from_omniauth(auth)
+    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
+end
+```
+
+21. add to omniauth_callbacks_controller.rb
+```
+private
+
+  def auth
+    @auth ||= request.env['omniauth.auth']
+  end
+```
+
+22. make another adjustment to user.rb:
+```
+class User < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
+
+
+  def self.from_omniauth(auth)
+    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
+      user.email = auth.info.email
+      user.password = Devise.friendly_token[0,20]
+      #user.full_name = auth.info.name
+      user.first_name = auth.info.name
+      user.avatar_url = auth.info.image
+      #if you are using confirmable and the provider(s) you use validate emails,
+      #uncomment the line below to skip confirmation emails:
+      # user.skip_confirmation!
+    end
+  end
+end
+```
+
+23. go back to adjusting omniauth_callbacks_controller.rb
+```
+  def google_oauth2
+    user = User.from_omniauth(auth)
+
+    if user.present?
+      sign_out_all_scopes
+      flash[:success] = t 'devise.omniauth_callbacks.success', kind: 'Google'
+      sign_in_and_redirect user, event: :authentication
+    else
+      flash[:alert] =
+      t 'devise.omniauth_callbacks.failure', kind: 'Google', reason: "#{auth.info.email} is not authorized."
+      redirect_to new_user_session_path
+    end
+  end
+```
+
+24. 
