@@ -33,4 +33,7 @@ This command will generate a new controller named "Welcome" and a view named "in
 root 'welcome#index'
 ```
 
-8.
+Everything is set for tutorial here:<br>
+https://youtu.be/CnZnwV38cjo
+
+8. 
