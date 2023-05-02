@@ -245,4 +245,18 @@ bin/rails g devise:views
 
 Test and see if it is working. It is!!!!
 
-33. 
+33. added to registrations_controller.rb
+```
+def update_resource(resource, params)
+    if resource.provider == 'google_oauth2'
+      params.delete('current_password')
+      resource.password = params['password']
+
+      resource.update_without_password(params)
+    else
+      resource.update_with_password(params)
+    end
+  end
+  ```
+
+  
