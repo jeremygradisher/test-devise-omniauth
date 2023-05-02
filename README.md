@@ -46,7 +46,7 @@ Then run ```bundle install```
 
 9. Then do the Devise install:
 ```
-rails g devise:install
+bin/rails g devise:install
 ```
 
 10. add to Devise initializer devise.rb
@@ -56,7 +56,7 @@ config.omniauth :google_oauth2, ENV['google_oauth_client_id'], ENV['google_oauth
 
 11. Create User Model:
 ```
-rails g devise user
+bin/rails g devise user
 ```
 
 12. add to Devise model - app/models/user.rb
@@ -78,4 +78,35 @@ t.string :provider
 
 * this is at 4:34 of 26:39: https://youtu.be/CnZnwV38cjo?t=274
 
-15. 
+15. create page:
+```
+bin/rails g controller pages home
+```
+
+16. adjust devise_for :users in routes.rb
+```
+devise_for :users, controllers: {
+    registrations: 'user/registrations',
+    sessions: 'users/sessions',
+    omniauth_callbacks: 'users/omniauth_callbacks'
+  }
+```
+
+17. generate Devise controller users:
+```
+bin/rails g devise:controllers users
+```
+
+18. add methods to app/controllers/users/sessions_controller.rb:
+```
+def after_sign_out_path_for(_resource_or_scope)
+    new_user_session_path
+  end
+
+  def after_sign_in_path_for(resource_or_scope)
+    stored_location_for(resource_or_scope) || root_path
+  end
+```
+We are here: https://youtu.be/CnZnwV38cjo?t=411
+
+19. 
