@@ -259,4 +259,4 @@ def update_resource(resource, params)
   end
   ```
 
-  
+34. Everything working on the current build except for User#edit
